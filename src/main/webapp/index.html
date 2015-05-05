@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <link rel="stylesheet" href="resources/css/style.css">
+  <script src="resources/js/script.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+ </head>
+ <body onload="run();">
+  <div class="container">
+   <header class="navigation">
+    <img src="https://cdn2.iconfinder.com/data/icons/function_icon_set/circle_green.png"
+	class="indicator" alt="Online indicator">
+	<div id="logo">LOGO</div>
+  <input type="submit" class="change-button" value="Change">
+	<input type="text" class="nickname-edit" placeholder="Nickname" style="float:right"/>
+	<div id="nickname-current">Current nickname</div>
+   </header>
+   <section class="chatzone">
+    <div class="messages-area">
+
+	  </div>
+	  <div class="users-area">
+      <div class="user">
+        <img src="http://s1.iconbird.com/ico/0612/vistabasesoftwareicons/w128h1281339252506CircleGreen2.png" class="icon"/>
+        <p class="nickname"></p>
+      </div>
+      <div class="user">
+        <img src="http://s1.iconbird.com/ico/0612/vistabasesoftwareicons/w128h1281339252518CircleRed2.png" class="icon"/>
+        <p class="nickname">Test1</p>
+      </div>
+      <div class="user">
+        <img src="http://s1.iconbird.com/ico/0612/vistabasesoftwareicons/w128h1281339252506CircleGreen2.png" class="icon"/>
+        <p class="nickname">Test2</p>
+      </div>
+
+
+	  </div>
+   </section>
+   <footer>
+    <textarea id="message-edit"></textarea>
+	  <div style="float:right; width:110px; height:100%">
+	   <input type="submit" class="send-button" value="Send"/>
+	  </div>
+   </footer>
+  </div>
+ </body>
+</html>
