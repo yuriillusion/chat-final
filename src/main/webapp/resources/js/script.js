@@ -5,9 +5,9 @@ var uniqueId = function() {
 	return Math.floor(date * random).toString();
 };
 
-var createMessage = function(nickname, text){
+var createMessage = function(author, text){
   return {
-    nickname: nickname,
+    author: author,
     text: text,
     id: uniqueId(),
     statusCode: 0
@@ -140,12 +140,12 @@ function createMessageWrap(message){
 
   var nicknameField = document.createElement("p");
   nicknameField.classList.add("nickname");
-  var nicknameNode = document.createTextNode(message.nickname);
+  var nicknameNode = document.createTextNode(message.author);
   nicknameField.appendChild(nicknameNode);
 
   messageTop.appendChild(nicknameField);
 
-  if(message.nickname === username && message.statusCode < 2){
+  if(message.author === username && message.statusCode < 2){
     var editIcon = document.createElement("img");
     editIcon.setAttribute("src", "http://s1.iconbird.com/ico/0612/GooglePlusInterfaceIcons/w18h181338911463pencil.png");
     editIcon.classList.add("icon");
@@ -206,7 +206,7 @@ function restore(continueWith){
 		for(var index in jsonMessagesList){
 		  var jsonMessage = jsonMessagesList[index];
 		  var message = {
-		    nickname : jsonMessage.nickname,
+            author : jsonMessage.author,
 		    text : jsonMessage.text,
 		    id : jsonMessage.id,
 		    statusCode : jsonMessage.statusCode
