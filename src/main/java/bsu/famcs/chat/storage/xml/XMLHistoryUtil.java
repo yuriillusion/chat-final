@@ -1,6 +1,7 @@
 package bsu.famcs.chat.storage.xml;
 
 import bsu.famcs.chat.model.Message;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -16,18 +17,23 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.*;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class XMLHistoryUtil {
-    private static final String STORAGE_LOCATION = System.getProperty("user.home") +  File.separator + "history.xml"; // history.xml will be located in the home directory
+    private static final String STORAGE_LOCATION = "file:///" + System.getProperty("user.home") +  File.separator + "history.xml"; // history.xml will be located in the home directory
     private static final String MESSAGES = "messages";
     private static final String MESSAGE = "message";
     private static final String ID = "id";
     private static final String AUTHOR = "author";
     private static final String TEXT = "text";
     private static final String STATUS = "status";
-    private static final String DATE ="date";
+    private static final String DATE = "date";
+    private static final String DATE_PATTERN = "dd-MM-yyyy HH:mm";
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_PATTERN);
+    private static Logger logger = Logger.getLogger(XMLHistoryUtil.class);
 
     private XMLHistoryUtil() {
     }
@@ -69,11 +75,11 @@ public class XMLHistoryUtil {
         messageElement.appendChild(text);
 
         Element status = document.createElement(STATUS);
-        status.appendChild(document.createTextNode((new Integer(message.getStatus().getStatus())).toString()));
+        status.appendChild(document.createTextNode((new Long(message.getStatus())).toString()));
         messageElement.appendChild(status);
 
         Element date = document.createElement(DATE);
-        date.appendChild(document.createTextNode("111")); //DATE
+        date.appendChild(document.createTextNode(DATE_FORMAT.format(new Date())));
         messageElement.appendChild(date);
 
         DOMSource source = new DOMSource(document);
@@ -108,11 +114,11 @@ public class XMLHistoryUtil {
                 }
 
                 if (STATUS.equals(node.getNodeName())) {
-                    node.setTextContent((new Integer(message.getStatus().getStatus())).toString());
+                    node.setTextContent((new Long(message.getStatus())).toString());
                 }
 
                 if(STATUS.equals(node.getNodeName())) {
-                    node.setTextContent("111"); //DATE
+                    node.setTextContent("111"); ///Date
                 }
 
             }
@@ -150,13 +156,7 @@ public class XMLHistoryUtil {
             String text = messageElement.getElementsByTagName(TEXT).item(0).getTextContent();
             String id = messageElement.getAttribute(ID);
             String statusCode = messageElement.getElementsByTagName(STATUS).item(0).getTextContent();
-            Message.Status status;
-            switch (statusCode) {
-                case "0": status = Message.Status.GOOD; break;
-                case "1": status = Message.Status.EDITED; break;
-                case "2": status = Message.Status.DELETED; break;
-                default: status = null;
-            }
+            int status = Integer.valueOf(statusCode);
             messages.add(new Message(author, text, id, status));
         }
         return messages;
@@ -180,7 +180,6 @@ public class XMLHistoryUtil {
     private static Transformer getTransformer() throws TransformerConfigurationException {
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
-        // Formatting XML properly
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         return transformer;
     }

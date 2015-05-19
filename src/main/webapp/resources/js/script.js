@@ -15,7 +15,7 @@ var createMessage = function(author, text){
 };
 
 var appState = {
-	mainUrl : 'http://localhost:999/chat',
+	mainUrl : 'http://localhost:8080/chat',//'chat',
 	messagesList:[],
 	token : 'TE11EN'
 };
@@ -115,7 +115,7 @@ function onDeleteIconClick(target){
 }
 
 function addMessage(message, continueWith){
-  var data = "{\"message\":" + JSON.stringify(message) + "}";
+  var data = "{\"message\": " + JSON.stringify(message) + "}";
   post(appState.mainUrl, data, function(){
     restore();
   });
@@ -192,7 +192,7 @@ function remove(element){
 }
 
 function restore(continueWith){
-  var url = appState.mainUrl + '?token=' + 'TN11EN';//appState.token;
+  var url = appState.mainUrl + '?token=TN11EN';//appState.token;
   
   get(url, function(responseText) {
 		console.assert(responseText !== null);

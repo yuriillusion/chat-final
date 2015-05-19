@@ -1,24 +1,12 @@
 package bsu.famcs.chat.model;
 
 public class Message{
-    public enum Status{
-        GOOD(0), EDITED(1), DELETED(2);
-        private int status;
-
-        Status(int status){
-            this.status = status;
-        }
-        public int getStatus() {
-            return status;
-        }
-    }
-
     private String author;
     private String text;
     private String id;
-    private Status status;
+    private long status;
 
-    public Message(String author, String text, String id, Status status) {
+    public Message(String author, String text, String id, long status) {
         this.author = author;
         this.text = text;
         this.id = id;
@@ -46,17 +34,16 @@ public class Message{
         this.id = new String(id);
     }
 
-    public Status getStatus() {
+    public long getStatus() {
         return status;
     }
-    public void setStatus(Status status) {
+    public void setStatus(long status) {
         this.status = status;
-        //exception+
     }
 
     @java.lang.Override
     public java.lang.String toString() {
         return "{\"author\":\"" + author + "\",\"text\":\"" + text + "\",\"id\":\"" + id + "\",\"statusCode\":" +
-                status.getStatus() + "}";
+                status + "}";
     }
 }
