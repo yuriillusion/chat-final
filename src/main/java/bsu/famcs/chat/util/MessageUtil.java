@@ -10,7 +10,7 @@ import org.json.simple.parser.ParseException;
 public final class MessageUtil {
     public static final String TOKEN = "token";
     private static final String MESSAGE = "message";
-    private static final String ID = "id";
+    public static final String ID = "id";
     private static final String AUTHOR = "author";
     private static final String TEXT = "text";
     private static final String STATUS = "statusCode";
@@ -22,25 +22,12 @@ public final class MessageUtil {
         Object author = jsonMessage.get(AUTHOR);
         Object text = jsonMessage.get(TEXT);
         Object status = jsonMessage.get(STATUS);
-        try {
-            Message message = new Message((String) author, (String) text, (String) id, (long) status);
-            return message;
-        } catch(Exception e){
-            logger.info(e);
-        }
-        return null;
+        return new Message((String) author, (String) text, (String) id, (long) status);
     }
 
     public static JSONObject stringToJson(String data) throws JSONException, ParseException {
         JSONParser parser = new JSONParser();
-        Object o = parser.parse(data.trim());
-        try {
-            JSONObject json = (JSONObject) o;
-            return json;
-        } catch (Exception e){
-            logger.info(e);
-        }
-        return null;
+        return (JSONObject) parser.parse(data.trim());
     }
 
     public static int getIndex(String token){

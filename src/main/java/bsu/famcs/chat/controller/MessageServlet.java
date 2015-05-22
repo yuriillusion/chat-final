@@ -1,10 +1,12 @@
 package bsu.famcs.chat.controller;
 
 import static bsu.famcs.chat.util.MessageUtil.TOKEN;
+import static bsu.famcs.chat.util.MessageUtil.ID;
 import static bsu.famcs.chat.util.MessageUtil.getIndex;
 import static bsu.famcs.chat.util.MessageUtil.getToken;
 import static bsu.famcs.chat.util.MessageUtil.jsonToMessage;
 import static bsu.famcs.chat.util.MessageUtil.stringToJson;
+
 
 import bsu.famcs.chat.model.Message;
 import bsu.famcs.chat.storage.xml.XMLHistoryUtil;
@@ -21,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
@@ -46,11 +49,9 @@ public class MessageServlet extends HttpServlet{
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException{
         logger.info("doGet");
         String token = request.getParameter(TOKEN);
-        //logger.info("Token " + token);
         try{
             if (token != null && !"".equals(token)) {
                 int index = getIndex(token);
-                //logger.info("Index: " + index);
                 String jsonResponse = formGetResponse(index);
                 logger.info("Response: " + jsonResponse);
                 response.setCharacterEncoding(ServletUtil.UTF_8);
@@ -85,12 +86,38 @@ public class MessageServlet extends HttpServlet{
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
+        logger.info("doPut");
+        String data = ServletUtil.getMessageBody(request);
+        logger.info("Data: " + data);
+        try{
+            JSONObject json = stringToJson(data);
+            Message message = jsonToMessage(json);
+            XMLHistoryUtil.updateData(message);
+            response.setStatus(HttpServletResponse.SC_OK);
+            logger.info("Message has been edited");
+        } catch (SAXException | ParserConfigurationException | IOException | JSONException | TransformerException |
+                ParseException | XPathExpressionException e){
+            logger.error(e);
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+        }
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        logger.info("doDelete");
+        String id = request.getParameter(ID);
+        Message message = new Message(null, "Deleted", id, 2);
+        try {
+            XMLHistoryUtil.updateData(message);
+        } catch (ParserConfigurationException | SAXException | XPathExpressionException | TransformerException e) {
+            logger.info(e);
+        }
     }
 
     @Override
     protected void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+        logger.info("doOptions");
+        response.addHeader("Access-Control-Allow-Methods","PUT, DELETE, POST, GET, OPTIONS");
     }
 
     @SuppressWarnings("unchecked")

@@ -23,7 +23,8 @@ import java.util.Date;
 import java.util.List;
 
 public class XMLHistoryUtil {
-    private static final String STORAGE_LOCATION = "file:///" + System.getProperty("user.home") +  File.separator + "history.xml"; // history.xml will be located in the home directory
+    private static final String STORAGE_LOCATION = System.getProperty("user.home") +  File.separator + "history.xml";
+    private static final String STORAGE_FILE_LOCATION = "file:///" + STORAGE_LOCATION;
     private static final String MESSAGES = "messages";
     private static final String MESSAGE = "message";
     private static final String ID = "id";
@@ -56,7 +57,7 @@ public class XMLHistoryUtil {
     public static synchronized void addData(Message message) throws ParserConfigurationException, SAXException, IOException, TransformerException {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        Document document = documentBuilder.parse(STORAGE_LOCATION);
+        Document document = documentBuilder.parse(STORAGE_FILE_LOCATION);
         document.getDocumentElement().normalize();
 
         Element root = document.getDocumentElement();
@@ -86,14 +87,15 @@ public class XMLHistoryUtil {
 
         Transformer transformer = getTransformer();
 
-        StreamResult result = new StreamResult(STORAGE_LOCATION);
+        StreamResult result = new StreamResult(STORAGE_FILE_LOCATION);
         transformer.transform(source, result);
     }
 
     public static synchronized void updateData(Message message) throws ParserConfigurationException, SAXException, IOException, TransformerException, XPathExpressionException {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        Document document = documentBuilder.parse(STORAGE_LOCATION);
+        Document document = documentBuilder.parse(new File(STORAGE_LOCATION));
+
         document.getDocumentElement().normalize();
         Node taskToUpdate = getNodeById(document, message.getId());
 
@@ -105,7 +107,7 @@ public class XMLHistoryUtil {
 
                 Node node = childNodes.item(i);
 
-                if (AUTHOR.equals(node.getNodeName())) {
+                if (AUTHOR.equals(node.getNodeName()) && message.getAuthor() != null) {
                     node.setTextContent(message.getAuthor());
                 }
 
@@ -117,8 +119,8 @@ public class XMLHistoryUtil {
                     node.setTextContent((new Long(message.getStatus())).toString());
                 }
 
-                if(STATUS.equals(node.getNodeName())) {
-                    node.setTextContent("111"); ///Date
+                if(DATE.equals(node.getNodeName())) {
+                    node.setTextContent(DATE_FORMAT.format(new Date()));
                 }
 
             }
@@ -146,7 +148,7 @@ public class XMLHistoryUtil {
         List<Message> messages = new ArrayList<>();
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        Document document = documentBuilder.parse(STORAGE_LOCATION);
+        Document document = documentBuilder.parse(STORAGE_FILE_LOCATION);
         document.getDocumentElement().normalize();
         Element root = document.getDocumentElement();
         NodeList messageList = root.getElementsByTagName(MESSAGE);
@@ -165,7 +167,7 @@ public class XMLHistoryUtil {
     public static synchronized int getStorageSize() throws SAXException, IOException, ParserConfigurationException {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        Document document = documentBuilder.parse(STORAGE_LOCATION);
+        Document document = documentBuilder.parse(STORAGE_FILE_LOCATION);
         document.getDocumentElement().normalize();
         Element root = document.getDocumentElement();
         return root.getElementsByTagName(MESSAGE).getLength();
