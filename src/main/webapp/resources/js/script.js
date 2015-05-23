@@ -16,20 +16,20 @@ var createMessage = function(author, text){
 
 var appState = {
 	mainUrl : 'http://localhost:8080/chat',//'chat',
-	messagesList:[],
-	token : 'TE11EN'
+	messagesList:[]
 };
 
 var username = 'Default';
-
 var editingWrap = null;
+var delay = 3000;
+var poll;
 
 function run(){
 	var appContainer = document.getElementsByClassName('container')[0];
 	changeUsername(username);
 	appContainer.addEventListener('click', delegateEvent);
 	restore();
-    setInterval("restore()", 3000);
+    poll = setInterval("restore()", delay);
 }
 
 function delegateEvent(evtObj) {
@@ -81,6 +81,7 @@ function onSendButtonClick(){
 }
 
 function onEditIconClick(target){
+  clearInterval(poll);
   editingWrap = target;
   remove(target.lastChild);
   var editPanel = document.createElement('textarea');
@@ -104,6 +105,7 @@ function finishEditing(){
   put(appState.mainUrl, data, function(){
     restore();
   });
+  poll = setInterval("restore()", delay);
 }
 
 function onDeleteIconClick(target){
@@ -193,14 +195,12 @@ function remove(element){
 }
 
 function restore(continueWith){
-  var url = appState.mainUrl + '?token=TN11EN';//appState.token;
+  var url = appState.mainUrl;
   
   get(url, function(responseText) {
 		console.assert(responseText !== null);
 
 		var response = JSON.parse(responseText);
-
-		appState.token = response.token;
 		
 		var messagesList = [];
 		var jsonMessagesList = response.messages;

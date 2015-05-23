@@ -1,9 +1,6 @@
 package bsu.famcs.chat.controller;
 
-import static bsu.famcs.chat.util.MessageUtil.TOKEN;
 import static bsu.famcs.chat.util.MessageUtil.ID;
-import static bsu.famcs.chat.util.MessageUtil.getIndex;
-import static bsu.famcs.chat.util.MessageUtil.getToken;
 import static bsu.famcs.chat.util.MessageUtil.jsonToMessage;
 import static bsu.famcs.chat.util.MessageUtil.stringToJson;
 
@@ -26,7 +23,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Enumeration;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -48,20 +44,14 @@ public class MessageServlet extends HttpServlet{
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException{
         logger.info("doGet");
-        String token = request.getParameter(TOKEN);
         try{
-            if (token != null && !"".equals(token)) {
-                int index = getIndex(token);
-                String jsonResponse = formGetResponse(index);
-                logger.info("Response: " + jsonResponse);
-                response.setCharacterEncoding(ServletUtil.UTF_8);
-                response.setContentType(ServletUtil.APPLICATION_JSON);
-                PrintWriter writer = response.getWriter();
-                writer.print(jsonResponse);
-                writer.flush();
-            } else {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "'token' parameter needed");
-            }
+            String jsonResponse = formGetResponse(0);
+            logger.info("Response: " + jsonResponse);
+            response.setCharacterEncoding(ServletUtil.UTF_8);
+            response.setContentType(ServletUtil.APPLICATION_JSON);
+            PrintWriter writer = response.getWriter();
+            writer.print(jsonResponse);
+            writer.flush();
         } catch(SAXException | IOException | ParserConfigurationException | JSONException | ParseException e){
             logger.error(e);
         }
@@ -123,7 +113,7 @@ public class MessageServlet extends HttpServlet{
     @SuppressWarnings("unchecked")
     private String formGetResponse(int index) throws SAXException, IOException, ParserConfigurationException, JSONException, ParseException {
         List<Message> messages = XMLHistoryUtil.getSubMessagesByIndex(index);
-        return "{\"messages\":" + messages + ",\"token\":\"" + getToken(XMLHistoryUtil.getStorageSize()) + "\"}";
+        return "{\"messages\":" + messages + "}";
     }
 
     private void loadHistory() throws SAXException, IOException, ParserConfigurationException, TransformerException {
