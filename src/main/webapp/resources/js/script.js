@@ -29,6 +29,7 @@ function run(){
 	changeUsername(username);
 	appContainer.addEventListener('click', delegateEvent);
 	restore();
+    setInterval("restore()", 3000);
 }
 
 function delegateEvent(evtObj) {
